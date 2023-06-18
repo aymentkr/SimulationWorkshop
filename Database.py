@@ -28,12 +28,14 @@ class Database:
             print("Error connecting to the database:", error)
 
     def execute_query(self, query, params=None):
-        if params:
-            self.cursor.execute(query, params)
-        else:
-            self.cursor.execute(query)
-
-        self.connection.commit()
+        try:
+            if params:
+                self.cursor.execute(query, params)
+            else:
+                self.cursor.execute(query)
+            self.connection.commit()
+        except odbc.Error as error:
+            print("Error executing query:", error)
 
     def fetch_one(self):
         result = None
@@ -44,8 +46,13 @@ class Database:
             print("Error fetching data:", str(e))
         return result
 
-    def fetch_all(self):
-        return self.cursor.fetchall()
+    def get_all_rows(self,query):
+        try:
+            self.cursor.execute(query)
+            return self.cursor.fetchall()
+        except Exception as e:
+            print("Error fetching data:", str(e))
+            return []
 
     def close(self):
         # Clean up resources

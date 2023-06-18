@@ -7,10 +7,9 @@ class Machines:
         self.buffer_store = buffer_store
 
     def get_available_machine(self):
-        query = "SELECT MaschineNr, Bezeichnung, verf_von, verf_bis, Kap_Tag FROM Maschine;"
-        self.database.execute_query(query)
-        results = self.database.fetch_all()  # Fetch all available machines
-
+        query = "SELECT * FROM Maschine;"
+        results = self.database.get_all_rows(query)  # Fetch all available machines
+        print(results)
         if results:
             for result in results:
                 machine_number, description, verf_von, verf_bis, kap_tag = result

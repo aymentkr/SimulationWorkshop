@@ -14,8 +14,3 @@ class Machine:
         query = "UPDATE Maschine SET verf_von = GETDATE(), verf_bis = DATEADD(MINUTE, dauer, GETDATE()) WHERE MaschineNr = ?;"
         params = (self.number,)
         self.database.execute_query(query, params)
-
-    def __str__(self):
-        return f"Machine {self.number}: {self.description}\n" \
-               f"Availability: {self.verf_von} - {self.verf_bis}\n" \
-               f"Capacity per day: {self.kap_tag} hours\n"
