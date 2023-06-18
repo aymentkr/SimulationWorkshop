@@ -49,7 +49,7 @@ class WorkshopSimulation:
             time.sleep(random.randint(1, 3))
 
     def process_part(self, part, machine):
-        print(f"Processing Part {part.id} on Machine {machine.number}")
+        print(f"Processing Part {part.id} on Machine {machine.machine_number}")
         machine.process_part(part)
         self.buffer_store.add_part(part, machine)
 
