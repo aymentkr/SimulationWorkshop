@@ -11,7 +11,7 @@ class Machine:
         self.database = database
 
     def process_part(self, part):
-        query = "UPDATE Maschine SET verf_von = GETDATE(), verf_bis = DATEADD(MINUTE, CAST(? AS INT), GETDATE()) WHERE MaschineNr = ?;"
+        query = "UPDATE Maschine SET verf_von = GETDATE(), verf_bis = DATEADD(MINUTE, ?, GETDATE()) WHERE MaschineNr = ?;"
         params = (part.read_duration(), self.machine_number)
         self.database.execute_query(query, params)
 

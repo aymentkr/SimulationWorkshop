@@ -1,3 +1,6 @@
+import WorkshopSimulation
+
+
 class Part:
     def __init__(self, part_id):
         self.id = part_id
@@ -8,4 +11,8 @@ class Part:
 
     def read_duration(self):
         duration = input("Enter the duration value for the part: ")
-        self.duration = int(duration) if duration.isdigit() else None
+        try:
+            self.duration = int(duration)
+        except ValueError:
+            WorkshopSimulation.stop_simulation=True
+            raise ValueError("Invalid duration value. Simulation cancelled.")
