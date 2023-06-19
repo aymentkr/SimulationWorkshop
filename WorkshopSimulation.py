@@ -82,3 +82,4 @@ class WorkshopSimulation:
         print("Simulation Summary")
         print("------------------")
         print(f"Total Days: {day_count}")
+        self.buffer_store.print_buffer_store_info()
