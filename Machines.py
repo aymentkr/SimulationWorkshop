@@ -6,6 +6,7 @@ class Machines:
     def __init__(self, database, buffer_store):
         self.database = database
         self.buffer_store = buffer_store
+        self.machines = self.get_available_machines()
 
     def get_available_machines(self):
         current_date = datetime.now().date()
@@ -23,3 +24,9 @@ class Machines:
                 if verf_bis is None or verf_bis > current_date:
                     machines.append(machine)
         return machines
+
+    def get_machine(self, machine_number):
+        for machine in self.machines:
+            if machine.machine_number == machine_number:
+                return machine
+        return None

@@ -16,10 +16,6 @@
    'D:\\Computer Science\\Bachelor\\WHZ\\4. Semester\\Einführung in die '
    'Wirtschaftswissenschaften\\PVL\\Projekt\\SimulationWorkshop\\Machines.py',
    'PYMODULE'),
-  ('Part',
-   'D:\\Computer Science\\Bachelor\\WHZ\\4. Semester\\Einführung in die '
-   'Wirtschaftswissenschaften\\PVL\\Projekt\\SimulationWorkshop\\Part.py',
-   'PYMODULE'),
   ('WorkshopSimulation',
    'D:\\Computer Science\\Bachelor\\WHZ\\4. Semester\\Einführung in die '
    'Wirtschaftswissenschaften\\PVL\\Projekt\\SimulationWorkshop\\WorkshopSimulation.py',

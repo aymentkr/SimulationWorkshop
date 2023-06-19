@@ -1,16 +1,15 @@
-import random
 import time
 
 from BufferStore import BufferStore
 from Database import Database
 from Machines import Machines
-from Part import Part
-
-# Global variables
-stop_simulation = False
 
 
-# Define the WorkshopSimulation class
+def stop():
+    global stop_simulation
+    stop_simulation = True
+
+
 class WorkshopSimulation:
     def __init__(self):
         self.database = Database()
@@ -21,46 +20,65 @@ class WorkshopSimulation:
         # Start the simulation
         print("Workshop Production Simulation")
         print("-------------------------------")
-        print("INFO: Enter a string value if you want to exit.")
         print()
 
-        # Start the simulation loop
-        part_id = 1
+        # Retrieve the list of auftrag_nr from the Auftrag table
+        auftrag_query = "SELECT auftrag_nr FROM Auftrag"
+        auftrag_results = self.database.get_all_rows(auftrag_query)
+        auftrag_list = [row[0] for row in auftrag_results]
 
-        while not stop_simulation:
+        if not auftrag_list:
+            print("No Auftrag found.")
+            return
 
-            # Generate a new part
-            part = Part(part_id)
-            part_id += 1
+        # Counters for days and total processing time
+        day_count = 1
+        total_processing_time = 0
 
-            print(f"New Part: {part.id}")
+        # Process auftrag_nr sequentially
+        for auftrag_nr in auftrag_list:
+            print(f"Day: {day_count}")
 
-            # Retrieve available machines
-            machines = self.machines.get_available_machines()
-            if machines:
-                # Move part to all available machines
-                for machine in machines:
-                    print(machine)
-                    self.process_part(part, machine)
-            else:
-                # Buffer store is full, wait until there's space available
-                print("Buffer Store is full. Waiting...")
-                time.sleep(2)  # Simulate waiting time
-                machines = self.machines.get_available_machines()
-                if machines:
-                    # Move part to all available machines
-                    for machine in machines:
-                        self.process_part(part, machine)
+            # Retrieve the production plan for the auftrag_nr from the Arbeitsplan table
+            plan_query = "SELECT ag_nr, MaschineNr, dauer FROM Arbeitsplan WHERE auftrag_nr = ? ORDER BY ag_nr"
+            plan_results = self.database.get_all_rows(plan_query, (auftrag_nr,))
+            plan_list = [dict(ag_nr=row[0], maschine=row[1], dauer=row[2]) for row in plan_results]
+
+            if not plan_list:
+                print(f"No production plan found for Auftrag {auftrag_nr}.")
+                continue
+
+            print(f"\nProcessing Auftrag {auftrag_nr}:")
+            print("-------------------------------")
+            print("Starting production steps...\n")
+
+            # Move part through the production plan
+            for step in plan_list:
+                machine_number = step['maschine']
+                duration = step['dauer']
+                part_id = step['ag_nr']
+                machine = self.machines.get_machine(machine_number)
+
+                if machine:
+                    total_processing_time += duration
+                    machine.process_part(part_id, duration, day_count)
+                    print(f"Part moved to the buffer store.")
+                    print()
+
+                    self.buffer_store.add_part(part_id, machine)  # Pass part_id and machine to add_part method
                 else:
-                    print("No available machines.")
+                    print(f"Machine {machine_number} not found.")
 
-            # Simulate processing time
-            time.sleep(random.randint(1, 3))
+            print(f"Finished processing Auftrag {auftrag_nr}.\n")
 
-    def process_part(self, part, machine):
-        print(f"Processing Part {part.id} on Machine {machine.machine_number}")
-        machine.process_part(part)
-        self.buffer_store.add_part(part, machine)
+            # Increment day count if total processing time exceeds 1440 minutes (24 hours)
+            if total_processing_time > 1440:
+                day_count += 1
+                total_processing_time = 0  # Reset the total processing time
 
-        print(f"Part {part.id} moved to the buffer store.")
-        print()
+            # Simulate waiting time before processing the next Auftrag
+            time.sleep(2)
+
+        print("Simulation Summary")
+        print("------------------")
+        print(f"Total Days: {day_count}")

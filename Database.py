@@ -46,9 +46,9 @@ class Database:
             print("Error fetching data:", str(e))
         return result
 
-    def get_all_rows(self,query):
+    def get_all_rows(self,query, params=None):
         try:
-            self.cursor.execute(query)
+            self.cursor.execute(query,params)
             return self.cursor.fetchall()
         except Exception as e:
             print("Error fetching data:", str(e))
@@ -60,3 +60,16 @@ class Database:
             self.cursor.close()
         if self.connection:
             self.connection.close()
+
+    def get_production_plan(self, auftrag_nr):
+        query = "SELECT ag_nr, MaschineNr, dauer FROM Arbeitsplan WHERE auftrag_nr = ? ORDER BY ag_nr"
+        params = (auftrag_nr,)
+        results = self.get_all_rows(query, params)
+
+        production_plan = []
+        if results:
+            for result in results:
+                ag_nr, maschine, dauer = result
+                production_plan.append((ag_nr, maschine, dauer))
+
+        return production_plan
